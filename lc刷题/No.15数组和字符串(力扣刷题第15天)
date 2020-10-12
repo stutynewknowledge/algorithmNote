@@ -1,0 +1,127 @@
+力扣54.螺旋矩阵
+给定一个包含 m x n 个元素的矩阵（m 行, n 列），请按照顺时针螺旋顺序，返回矩阵中的所有元素。
+
+示例 1:
+
+输入:
+[
+ [ 1, 2, 3 ],
+ [ 4, 5, 6 ],
+ [ 7, 8, 9 ]
+]
+输出: [1,2,3,6,9,8,7,4,5]
+示例 2:
+
+输入:
+[
+  [1, 2, 3, 4],
+  [5, 6, 7, 8],
+  [9,10,11,12]
+]
+输出: [1,2,3,4,8,12,11,10,9,5,6,7]
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/spiral-matrix
+
+方法:模拟轨迹的运动方向，构建一个坐标系
+        1、顺时针旋转:1、则刚开始是x轴每次向右移动1的距离，y轴不变
+                    2、当x轴到达尽头时，x不变，y向下移动1
+                    3、当y到达尽头时，y不变，x向左移动1的距离，即x向右移动-1
+                    4、当x到达左边的尽头的时候，x则不变，y向上移动1的距离，即向下移动-1
+                 directions = [(1,0), (0, 1), (-1, 0), (0, -1)]
+                    (1, 0) 第一位表示x轴移动的距离，第二位表示y轴移动的距离，
+                    (1, 0):表示向右移动
+                    (0, 1):表示向下移动
+                    (-1, 0):表示向左移动
+                    (0, -1):表示向上移动
+                
+        2、用next_x,next_y来表示下一步将要走的位置；x,y表示现在处于的位置:
+                    那么用一个变量di来表示移动的方向
+                    那么就下一步要走的位置便是:next_x, next_y = x + directions[di][0]， y + dictions[di][1]
+                    然后判断next_x 和next_y是否超过了边界
+                    即0 <= next_x <= n - 1  0 <= next_y <= m - 1
+                    如果在范围内， 则 x， y = next_x, next_y
+                    如果不在则就需要将方向改变。
+        3、方向的改变:
+                    顺时针方向是，右 -->下 --> 左 --> 上
+                    所以此时只需要将di+1,
+                    但是不能一直加1，当超过了4之后，便重新将di置为0，因为此时已将转了一圈了，需要在转就要重新开始。
+                    即 di = (di+1) % 4
+        4、还需要解决会遇到重复取值的问题:
+                    可以设置一个列表作为标志
+                    marked = [[false for _ in range(len(matrix[0]))] for _ in range(len(matrix))]
+                    每次取完值后，将marked[y][x] = True
+                    ps:为什么是[y][x]呢，因为x方向是横向的，y才是纵向的，此时y代表的是matrix中的第几个数据，x代表的是数据里的第几个整数。
+        5、那么就只需要在for循环中，判断标志是否为False
+        6、for循环次数:
+                因为需要取到每一个值:所以for循环的次数就是matrix中含有的整数的个数
+
+class Solution:
+    def spiralOrder(self, matrix: List[List[int]]) -> List[int]:
+        m = len(matrix)
+        if m == 0:
+            return matrix
+        n = len(matrix[0])
+        directions = [(1,0), (0, 1), (-1, 0), (0, -1)]
+        x, y, di = 0, 0, 0
+        res = []
+        marked = [[False for _ in range(n)] for _ in range(m)]
+        range_count = m * n 
+        for _ in range(range_count):
+            marked[y][x] = True
+            res.append(matrix[y][x]) 
+            next_x = x + directions[di][0]
+            next_y = y + directions[di][1]
+            if 0 <= next_y <= m - 1 and 0 <= next_x <= n-1 and not marked[next_y][next_x]:   
+                x ,y = next_x, next_y
+            else:       # 此时就需要进行转向
+                di = (di + 1) % 4
+                x, y = x + directions[di][0], y + directions[di][1]
+        return res
+
+# 大佬解螺旋
+# class Solution:
+#     def spiralOrder(self, matrix: List[List[int]]) -> List[int]:
+#         res = []
+#         while matrix:
+#             res += matrix.pop(0)
+#             matrix = list(map(list, zip(*matrix)))[::-1]
+#         return res
+
+给定一个非负整数 numRows，生成杨辉三角的前 numRows 行。
+
+
+力扣118.杨辉三角
+在杨辉三角中，每个数是它左上方和右上方的数的和。
+
+示例:
+
+输入: 5
+输出:
+[
+     [1],
+    [1,1],
+   [1,2,1],
+  [1,3,3,1],
+ [1,4,6,4,1]
+]
+在真实的面试中遇到过这道题？
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/pascals-triangle
+
+
+class Solution:
+    def generate(self, numRows: int) -> List[List[int]]:
+        ret = []
+        for i in range(1, numRows+1):
+            ret.append([1 for _ in range(i)])
+        for i in range(1, numRows-1):
+            n = len(ret[i])
+            for j in range(1, n):
+                ret[i+1][j] = ret[i][j-1]+ret[i][j]
+        return ret
+
+
+                
+        

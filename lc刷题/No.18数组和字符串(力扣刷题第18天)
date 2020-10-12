@@ -1,0 +1,99 @@
+力扣209.长度最小的字数组
+给定一个含有 n 个正整数的数组和一个正整数 s ，找出该数组中满足其和 ≥ s 的长度最小的连续子数组。如果不存在符合条件的连续子数组，返回 0。
+
+示例: 
+
+输入: s = 7, nums = [2,3,1,2,4,3]
+输出: 2
+解释: 子数组 [4,3] 是该条件下的长度最小的连续子数组。
+进阶:
+
+如果你已经完成了O(n) 时间复杂度的解法, 请尝试 O(n log n) 时间复杂度的解法。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/minimum-size-subarray-sum
+
+
+
+力扣119.杨辉三角
+给定一个非负索引 k，其中 k ≤ 33，返回杨辉三角的第 k 行。
+
+
+
+在杨辉三角中，每个数是它左上方和右上方的数的和。
+
+示例:
+
+输入: 3
+输出: [1,3,3,1]
+进阶：
+
+你可以优化你的算法到 O(k) 空间复杂度吗？
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/pascals-triangle-ii
+
+class Solution:
+    def getRow(self, rowIndex: int) -> List[int]:
+        all_li = []
+        for i in range(rowIndex+2):
+            all_li.append([1 for _ in range(i)])
+        for i in range(2, rowIndex+2):
+            n = len(all_li[i])
+            for j in range(1, n-1):
+                all_li[i][j] = all_li[i-1][j-1] + all_li[i-1][j]
+        return all_li[rowIndex+1]
+
+class Solution:
+    def getRow(self, rowIndex: int) -> List[int]:
+        previous = [1,1]
+        all_li = [1 for _ in range(rowIndex+1)]
+        for i in range(2, rowIndex+1):
+            for j in range(1, i):
+                all_li[j] = previous[j-1] + previous[j]
+            previous = all_li[0:i+1]
+        return all_li
+
+力扣189.旋转数组
+给定一个数组，将数组中的元素向右移动 k 个位置，其中 k 是非负数。
+
+示例 1:
+
+输入: [1,2,3,4,5,6,7] 和 k = 3
+输出: [5,6,7,1,2,3,4]
+解释:
+向右旋转 1 步: [7,1,2,3,4,5,6]
+向右旋转 2 步: [6,7,1,2,3,4,5]
+向右旋转 3 步: [5,6,7,1,2,3,4]
+示例 2:
+
+输入: [-1,-100,3,99] 和 k = 2
+输出: [3,99,-1,-100]
+解释: 
+向右旋转 1 步: [99,-1,-100,3]
+向右旋转 2 步: [3,99,-1,-100]
+说明:
+
+尽可能想出更多的解决方案，至少有三种不同的方法可以解决这个问题。
+要求使用空间复杂度为 O(1) 的 原地 算法。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/rotate-array
+
+
+class Solution:
+    def rotate(self, nums: List[int], k: int) -> None:
+        """
+        Do not return anything, modify nums in-place instead.
+        """
+        # 反转
+        def reverse_li(start, end, nums):
+            while start < end:
+                nums[start], nums[end] =  nums[end], nums[start]
+                end -= 1
+                start += 1
+        n = len(nums)
+        k %= n
+        reverse_li(0, n-1, nums)
+        reverse_li(0, k-1, nums)
+        reverse_li(k, n-1, nums)

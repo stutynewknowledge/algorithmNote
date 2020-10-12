@@ -1,0 +1,258 @@
+栈和队列的总结第一天:
+	队列:先入先出，多用于bfs算法
+	栈:后入先出，多用于dfs算法
+
+	bfs算法:
+		1、构建一个队列，用于存储节点周围的节点
+		2、一个集合或者字典，用于存储已经访问过的节点
+		3、遍历节点的四周，当节点四周遍历完之后，在去遍历下一个节点的四周，ps:注意要判断节点是否已经访问，即是否在集合中
+	dfs算法:
+		1、构建一个栈，用于存储节点的同一个方向的节点
+		2、用一个集合或者字典来存储已经遍历过的节点，防止同一个节点被放入栈中
+		3、遍历完一个方向过后，回溯到节点，遍历节点的另外一个方向，直到该节点的四周都遍历完成。
+
+力扣225.使用队列实现栈的下列操作：
+
+push(x) -- 元素 x 入栈
+pop() -- 移除栈顶元素
+top() -- 获取栈顶元素
+empty() -- 返回栈是否为空
+注意:
+
+你只能使用队列的基本操作-- 也就是 push to back, peek/pop from front, size, 和 is empty 这些操作是合法的。
+你所使用的语言也许不支持队列。 你可以使用 list 或者 deque（双端队列）来模拟一个队列 , 只要是标准的队列操作即可。
+你可以假设所有操作都是有效的（例如, 对一个空的栈不会调用 pop 或者 top 操作）。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/implement-stack-using-queues
+class MyQueue:
+
+    def __init__(self):
+        """
+        Initialize your data structure here.
+        """
+        self.stack = []
+        self.help_stack = []
+        self.first = None
+        
+
+    def push(self, x: int) -> None:
+        """
+        Push element x to the back of queue.
+        """
+        if len(self.help_stack) == 0:
+            self.first = x
+        self.help_stack.append(x)
+        
+
+    def pop(self) -> int:
+        """
+        Removes the element from in front of queue and returns that element.
+        """    
+        while self.help_stack:
+            self.stack.append(self.help_stack.pop())
+        value = self.stack.pop()
+        n = len(self.stack)
+        while self.stack:
+            if len(self.stack) == n:
+                self.first = self.stack.pop()
+                self.help_stack.append(self.first)
+            else:
+                self.help_stack.append(self.stack.pop())
+        return value
+
+
+    def peek(self) -> int:
+        """
+        Get the front element.
+        """
+        return self.first
+        
+
+    def empty(self) -> bool:
+        """
+        Returns whether the queue is empty.
+        """
+        if self.help_stack:
+            return False
+        return True
+
+
+# Your MyQueue object will be instantiated and called as such:
+# obj = MyQueue()
+# obj.push(x)
+# param_2 = obj.pop()
+# param_3 = obj.peek()
+# param_4 = obj.empty()
+
+力扣232.使用队列实现栈的下列操作：
+
+push(x) -- 元素 x 入栈
+pop() -- 移除栈顶元素
+top() -- 获取栈顶元素
+empty() -- 返回栈是否为空
+注意:
+
+你只能使用队列的基本操作-- 也就是 push to back, peek/pop from front, size, 和 is empty 这些操作是合法的。
+你所使用的语言也许不支持队列。 你可以使用 list 或者 deque（双端队列）来模拟一个队列 , 只要是标准的队列操作即可。
+你可以假设所有操作都是有效的（例如, 对一个空的栈不会调用 pop 或者 top 操作）。
+from collections import deque
+class MyStack:
+    def __init__(self):
+        self.stack = deque()
+
+    def push(self, x: int) -> None:
+        self.stack.insert(0, x)
+
+    def pop(self) -> int:
+        for i in range(len(self.stack)-1):          # 将每次的队列中先进入的数据放到第一位
+            self.stack.insert(0, self.stack.pop())
+        return self.stack.pop()
+
+    def top(self) -> int:
+        tmp = self.pop()
+        self.stack.insert(0, tmp)
+        return tmp
+
+    def empty(self) -> bool:
+        return not self.stack        
+
+
+# Your MyStack object will be instantiated and called as such:
+# obj = MyStack()
+# obj.push(x)
+# param_2 = obj.pop()
+# param_3 = obj.top()
+# param_4 = obj.empty()
+
+力扣394.字符串解码
+给定一个经过编码的字符串，返回它解码后的字符串。
+
+编码规则为: k[encoded_string]，表示其中方括号内部的 encoded_string 正好重复 k 次。注意 k 保证为正整数。
+
+你可以认为输入字符串总是有效的；输入字符串中没有额外的空格，且输入的方括号总是符合格式要求的。
+
+此外，你可以认为原始数据不包含数字，所有的数字只表示重复的次数 k ，例如不会出现像 3a 或 2[4] 的输入。
+
+示例:
+
+s = "3[a]2[bc]", 返回 "aaabcbc".
+s = "3[a2[c]]", 返回 "accaccacc".
+s = "2[abc]3[cd]ef", 返回 "abcabccdcdcdef".
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/decode-string
+
+思路: 1、遍历整个字符串
+	 2、定义两个变量和一个栈，用于存储遍历到的数字(multi)和结果res
+	 3、当遇到'['时
+	 	1、将multi和res推入栈中，并且将multi和res皆置为空
+	 	2、注意:数字可能占据多位，那么转换multi时就需要使multi = multi*10 + int(i)
+	 4、当遇到']'时
+	 	1、讲一个元素推出栈中，此时res = last_res + multi * res
+	 	2、last_res是'['和上一个']'之间的元素
+	 5、当遇到字母时:
+	 	res += i
+	 最后结果就是res
+
+class Solution:
+    def decodeString(self, s: str) -> str:
+        # DFS
+        if not s:
+            return s
+        stack = []
+        multi = 0 
+        res = '' 
+        for str in s:
+            if str == '[':
+                stack.append((multi, res))  # 当遇到'['时，将当前的res和当前的multi置入栈中
+                multi, res = 0, ''     # 将要乘积的数和当前结果置为空
+                continue
+            if str == ']':         # 当遇到']'时，取出栈中的一个结果，此时的last_res便是'['和上一个'['之间的字母。然后此时的res便为multi*res+last_res
+                multi, last_res = stack.pop()
+                res = last_res + res * multi
+                multi = 0
+                continue
+            if '0' <= str <= '9':
+                multi = multi*10 + int(str)
+                continue
+            res += str
+        return res
+                
+力扣733.图像渲染
+有一幅以二维整数数组表示的图画，每一个整数表示该图画的像素值大小，数值在 0 到 65535 之间。
+
+给你一个坐标 (sr, sc) 表示图像渲染开始的像素值（行 ，列）和一个新的颜色值 newColor，让你重新上色这幅图像。
+
+为了完成上色工作，从初始坐标开始，记录初始坐标的上下左右四个方向上像素值与初始坐标相同的相连像素点，接着再记录这四个方向上符合条件的像素点与他们对应四个方向上像素值与初始坐标相同的相连像素点，……，重复该过程。将所有有记录的像素点的颜色值改为新的颜色值。
+
+最后返回经过上色渲染后的图像。
+
+示例 1:
+
+输入: 
+image = [[1,1,1],[1,1,0],[1,0,1]]
+sr = 1, sc = 1, newColor = 2
+输出: [[2,2,2],[2,2,0],[2,0,1]]
+解析: 
+在图像的正中间，(坐标(sr,sc)=(1,1)),
+在路径上所有符合条件的像素点的颜色都被更改成2。
+注意，右下角的像素没有更改为2，
+因为它不是在上下左右四个方向上与初始点相连的像素点。
+注意:
+
+image 和 image[0] 的长度在范围 [1, 50] 内。
+给出的初始点将满足 0 <= sr < image.length 和 0 <= sc < image[0].length。
+image[i][j] 和 newColor 表示的颜色值在范围 [0, 65535]内。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/flood-fill
+
+# 思路:BFS
+	from collections import deque
+class Solution:
+    def __init__(self):
+        self.directions = [(0, 1), (0, -1), (1, 0), (-1, 0)] # 定义四个方向
+    def floodFill(self, image: List[List[int]], sr: int, sc: int, newColor: int) -> List[List[int]]:
+        if not image:
+            return image
+        if image[sr][sc] == newColor:		# 如果颜色和像素相等直接就将图像返回(题的小bug)
+        	return image
+        q = deque([(sr, sc)])
+        px = image[sr][sc]
+        image[sr][sc] = newColor
+        m = len(image)
+        n = len(image[0])
+        visited = set()
+        visited.add((sr,sc))
+        while q:
+            x ,y = q.popleft()
+            for direction in self.directions:
+                next_x, next_y = x + direction[0], y + direction[1]
+                if 0 <= next_x <= m-1 and 0 <= next_y <= n-1 and image[next_x][next_y] == px and (next_x, next_y) not in visited:
+                    q.append((next_x, next_y))
+                    image[next_x][next_y] = newColor
+                    visited.add((next_x, next_y))
+        return image
+# 法2、DFS
+class Solution:
+    def __init__(self):
+        self.directions = [(0, 1), (0, -1), (1, 0), (-1, 0)] # 定义四个方向
+	def floodFill(self, image: List[List[int]], sr: int, sc: int, newColor: int) -> List[List[int]]:
+        if not image:
+            return image
+        px = image[sr][sc]
+        m = len(image)
+        n = len(image[0])
+        visited = set()
+        def dfs(x, y):
+            if image[x][y] == px:
+                visited.add((x, y))
+                image[x][y] = newColor
+                for direction in self.directions:
+                    next_x, next_y = x + direction[0], y + direction[1]
+                    if 0 <= next_x <= m-1 and 0 <= next_y <= n-1 and (next_x, next_y) not in visited:
+                        dfs(next_x, next_y)
+        dfs(sr, sc)
+        return image
+

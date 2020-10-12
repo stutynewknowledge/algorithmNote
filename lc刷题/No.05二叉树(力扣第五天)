@@ -1,0 +1,87 @@
+\Python实现二叉树
+class TreeNode:
+	def __init__(self, x)
+		self.x = x
+		self.left = None
+		self.right = None
+
+树的遍历:
+	1、前序遍历:
+		先取树的头节点的值，然后遍历树的左边，在遍历树的右边
+		迭代的方法:
+			class Solution:
+    			def preorderTraversal(self, root: TreeNode) -> List[int]:
+    				if not root:
+    					return []
+    				return [root.val] + self.preorderTraversal(root.left) + slef.preorderTraversal(root.right)
+    	迭代的方法:
+    		创建两个栈和一个指针,一个栈来存储树的右边的节点,一个栈用来存储值,指针用来存储当前树的节点，当存储树右边节点的栈为None并且指针为None时,便退出循环，且返回存储值的栈。
+			class Solution:
+    			def preorderTraversal(self, root: TreeNode) -> List[int]:
+    				values = []
+    				right_nodes = []
+    				current = root
+    				while right_nodes or current:
+    					if current:
+    						values.append(current.val)
+    						right_nodes.append(current.right)
+    						current = current.left
+    					else:
+    						current = right_nodes.pop()
+    				return values
+    2、中序遍历
+    	先遍历左子树，在访问根节点，在遍历右子树
+    	递归的方法:
+    		class Solution:
+			    def inorderTraversal(self, root: TreeNode) -> List[int]:
+			        if not root:
+			            return []
+			        return self.inorderTraversal(root.left) + [root.val] + self.inorderTraversal(root.right)
+		迭代的方法:
+			明确:中序遍历的第一次取值在哪里，只有当current为None的时候，才会取值。
+			1、将树的左子树放入栈中,当current为None时，取出栈的最后一次节点，并将其赋给current，然后在将其放入values中，然后在将current.right推入栈中
+				class Solution:
+			    	def inorderTraversal(self, root: TreeNode) -> List[int]:
+				    	stack = []
+				    	values = []
+				    	current = root
+				    	while stack or current:
+				    		if current:
+				    			stack.append(current)
+				    			current = current.left
+				    		else:
+				    			current = stack.pop()
+				    			values.append(current.val)
+				    			current = current.right
+				    	return values
+	3、后序遍历:
+		1、递归
+		class Solution:
+  			def postorderTraversal(self, root: TreeNode) -> List[int]:
+       			 # 递归
+		        if not root:
+		            return []
+		        return self.postorderTraversal(root.left) + self.postorderTraversal(root.right) + [root.val]
+		2、迭代:
+			class Solution:
+			    def postorderTraversal(self, root: TreeNode) -> List[int]:
+			        # 递归
+			        # if not root:
+			        #     return []
+			        # return self.postorderTraversal(root.left) + self.postorderTraversal(root.right) + [root.val]
+			        # 遍历
+			        # 相当于前序遍历的取反(只是前序遍历是中左右，后续遍历是左右中，所以需要将前序遍历取左子树变成取右子树)
+			        stack = []
+			        values = []
+			        current = root
+			        while stack or current:
+			            if current:
+			                values.append(current.val)	// 取出右子树的值放入values中
+			                stack.append(current.left)  // 将左子树推入栈中
+			                current = current.right
+			            else:
+			                current = stack.pop()
+			        return values[::-1]					// 取反
+
+
+

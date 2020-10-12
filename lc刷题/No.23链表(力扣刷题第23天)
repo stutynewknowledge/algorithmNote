@@ -1,0 +1,143 @@
+力扣138.复制带随机指针的链表
+给定一个链表，每个节点包含一个额外增加的随机指针，该指针可以指向链表中的任何节点或空节点。
+
+要求返回这个链表的深拷贝。 
+
+ 
+
+示例：
+
+
+
+输入：
+{"$id":"1","next":{"$id":"2","next":null,"random":{"$ref":"2"},"val":2},"random":{"$ref":"2"},"val":1}
+
+解释：
+节点 1 的值是 1，它的下一个指针和随机指针都指向节点 2 。
+节点 2 的值是 2，它的下一个指针指向 null，随机指针指向它自己。
+ 
+
+提示：
+
+你必须返回给定头的拷贝作为对克隆列表的引用。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/copy-list-with-random-pointer
+
+
+"""
+# Definition for a Node.
+class Node:
+    def __init__(self, val, next, random):
+        self.val = val
+        self.next = next
+        self.random = random
+"""
+class Solution:
+    def __init__(self):
+        self.visited = {}
+    def copyRandomList(self, head: 'Node') -> 'Node':
+        '''
+        法1:
+            思路:回溯
+                1、用一个字典的key作为原链表的节点,value作为克隆的节点
+                2、每次执行一次函数，便创建一个克隆的节点。
+                3、当原节点的random在字典的key中，代表其已被访问过了，那么该克隆的节点的random就指向此key
+                知道
+        '''
+        if not head:
+            return head
+        if head in self.visited:
+            return self.visited[head]
+        node = Node(head.val, None, None)
+        self.visited[head] = node
+        node.next = self.copyRandomList(head.next)
+        node.random = self.copyRandomList(head.random)
+        return node
+        '''
+        法2:
+            思路:将法1的递归变为迭代  
+                1、用一个字典的key作为原链表的节点,value作为克隆的节点
+                2、循环原链表，每次循环的时候，将原节点复制，然后存入字典中
+                3、在此循环原链表，如果原远点的random在字典中，则将新的节点的random指向字典中的value
+        '''
+        if not head:
+            return head
+        dict = {}
+        '''
+        key为原链表的节点，value为拷贝的节点
+        '''
+        clone_head = Node(head.val, None, None)
+        clone_current = clone_head
+        dict[head] = clone_current
+        current = head.next
+        while current:
+            clone_current.next = Node(current.val, None, None)
+            clone_current = clone_current.next
+            dict[current] = clone_current
+            current = current.next
+        current = head
+        clone_current = clone_head
+        while current:
+            if current.random in dict:
+                clone_current.random = dict[current.random]
+            current = current.next
+            clone_current = clone_current.next
+        return clone_head
+
+力扣61.旋转链表
+给定一个链表，旋转链表，将链表每个节点向右移动 k 个位置，其中 k 是非负数。
+
+示例 1:
+
+输入: 1->2->3->4->5->NULL, k = 2
+输出: 4->5->1->2->3->NULL
+解释:
+向右旋转 1 步: 5->1->2->3->4->NULL
+向右旋转 2 步: 4->5->1->2->3->NULL
+示例 2:
+
+输入: 0->1->2->NULL, k = 4
+输出: 2->0->1->NULL
+解释:
+向右旋转 1 步: 2->0->1->NULL
+向右旋转 2 步: 1->2->0->NULL
+向右旋转 3 步: 0->1->2->NULL
+向右旋转 4 步: 2->0->1->NULL
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/rotate-list
+
+
+class Solution:
+    def rotateRight(self, head: ListNode, k: int) -> ListNode:
+        '''
+        思路:
+            1、先循环整个链表，将链表的最后一个节点的next指向头部，构建成一个循环链表
+            2、我们可以发现一个规律:
+                1、当k < 链表总数的时候，我们可以从最后一个节点往后数(count-k)个就是旋转后的最后一个节点，那么当前节点的下一个则为head，然后将这个节点的next指向None即可
+                2、当k > 链表总数的时候, 我们只需要将k %= count，然后重复2-1操作即可
+        '''
+        if k == 0 or (not head):
+            return head
+        current = head
+        count = 1
+        while current.next:
+            current = current.next
+            count += 1
+        current.next = head
+        if k == count:
+            current.next = None
+            return head
+        elif k > count:
+            k = k % count
+        n = count - k
+        for i in range(n):
+            current = current.next
+        head = current.next
+        current.next = None
+        return head
+        
+        
+        
+            

@@ -1,0 +1,139 @@
+力扣542.01矩阵
+给定一个由 0 和 1 组成的矩阵，找出每个元素到最近的 0 的距离。
+
+两个相邻元素间的距离为 1 。
+
+示例 1:
+输入:
+
+0 0 0
+0 1 0
+0 0 0
+输出:
+
+0 0 0
+0 1 0
+0 0 0
+示例 2:
+输入:
+
+0 0 0
+0 1 0
+1 1 1
+输出:
+
+0 0 0
+0 1 0
+1 2 1
+注意:
+
+给定矩阵的元素个数不超过 10000。
+给定矩阵中至少有一个元素是 0。
+矩阵中的元素只在四个方向上相邻: 上、下、左、右。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/01-matrix
+
+# 思路：BFS
+		用广度优先搜素，搜索1周边4个方向上的节点，当遇到0的时候，直接返回其距离
+		from collections import deque
+from collections import deque
+class Solution:
+    def __init__(self):
+        self.directions = [(0, 1), (0, -1), (1, 0), (-1, 0)]
+    def updateMatrix(self, matrix: List[List[int]]) -> List[List[int]]:
+        #BFS
+        def count(x, y):
+            q = deque()     # 用于存放周围的节点
+            visited = set()
+            q.appendleft((x, y))
+            distance = 0        # 距离
+            while q:
+                distance += 1   # 每次搜索完周围的节点之后，距离便加1
+                q_size = len(q) # 保证每次搜索都能将周围的节点搜索完
+                for _ in range(q_size):
+                    x, y = q.pop()
+                    for direction in self.directions:
+                        next_x, next_y = x + direction[0], y + direction[1]
+                        if 0 <= next_x <= m-1 and 0 <= next_y <= n - 1 and (next_x, next_y) not in visited:
+                            if matrix[next_x][next_y] != 0:
+                                q.appendleft((next_x, next_y))
+                                visited.add((next_x, next_y))       # 将已经搜索过的节点加入集合中，保证坐标不会重复放入队列中
+                            else:
+                                return distance     # 因为矩阵中必定会有0，所以必定会有一个距离，所以直接返回其距离
+            return distance
+        
+        m = len(matrix)
+        if m == 0:
+            return matrix
+        n = len(matrix[0])
+        
+        dist = [[0 for _ in range(n)] for _ in range(m)]
+        for i in range(m):
+            for j in range(n):
+                if matrix[i][j] != 0:       # 找到01矩阵为1的坐标,然后取搜索此坐标周围的节点
+                    dist[i][j] = count(i, j)
+        return dist
+        
+力扣841.钥匙和房间
+有 N 个房间，开始时你位于 0 号房间。每个房间有不同的号码：0，1，2，...，N-1，并且房间里可能有一些钥匙能使你进入下一个房间。
+
+在形式上，对于每个房间 i 都有一个钥匙列表 rooms[i]，每个钥匙 rooms[i][j] 由 [0,1，...，N-1] 中的一个整数表示，其中 N = rooms.length。 钥匙 rooms[i][j] = v 可以打开编号为 v 的房间。
+
+最初，除 0 号房间外的其余所有房间都被锁住。
+
+你可以自由地在房间之间来回走动。
+
+如果能进入每个房间返回 true，否则返回 false。
+
+示例 1：
+
+输入: [[1],[2],[3],[]]
+输出: true
+解释:  
+我们从 0 号房间开始，拿到钥匙 1。
+之后我们去 1 号房间，拿到钥匙 2。
+然后我们去 2 号房间，拿到钥匙 3。
+最后我们去了 3 号房间。
+由于我们能够进入每个房间，我们返回 true。
+示例 2：
+
+输入：[[1,3],[3,0,1],[2],[0]]
+输出：false
+解释：我们不能进入 2 号房间。
+提示：
+1 <= rooms.length <= 1000
+0 <= rooms[i].length <= 1000
+所有房间中的钥匙数量总计不超过 3000。
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/keys-and-rooms
+
+思路: DFS
+	具体看注释
+class Solution:
+    def canVisitAllRooms(self, rooms: List[List[int]]) -> bool:
+        # DFS
+        n = len(rooms)
+        if n == 0 or n == 1:
+            return True
+        stack = []          # 用于存放钥匙能开的房间号
+        visited = set()     # 用于存放已开房间号的所有钥匙，去重
+        stack.append(0)     
+        visited.add(0)
+        while stack:
+            room_key = stack.pop()  # 拿出钥匙能开的房间号
+            for key in rooms[room_key]: # 打开房间，拿出每一个钥匙
+                if key not in visited:  # 如果钥匙已经有了，那便跳过
+                    visited.add(key)    # 将没有的钥匙加入钥匙集合中
+                    stack.append(key)   # 将钥匙没有打开的房间号存入栈中
+        return len(visited) == len(rooms)   # 判断所有能开房间的钥匙的数量与房间数量是否相同，因为已经去重，所以可以直接判断
+        
+        
+                    
+        
+                        
+                                    
+                    
+                            
+                            
+                    

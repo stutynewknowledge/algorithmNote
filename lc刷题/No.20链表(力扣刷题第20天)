@@ -1,0 +1,404 @@
+力扣707.设计链表
+设计链表的实现。您可以选择使用单链表或双链表。单链表中的节点应该具有两个属性：val 和 next。val 是当前节点的值，next 是指向下一个节点的指针/引用。如果要使用双向链表，则还需要一个属性 prev 以指示链表中的上一个节点。假设链表中的所有节点都是 0-index 的。
+
+在链表类中实现这些功能：
+
+get(index)：获取链表中第 index 个节点的值。如果索引无效，则返回-1。
+addAtHead(val)：在链表的第一个元素之前添加一个值为 val 的节点。插入后，新节点将成为链表的第一个节点。
+addAtTail(val)：将值为 val 的节点追加到链表的最后一个元素。
+addAtIndex(index,val)：在链表中的第 index 个节点之前添加值为 val  的节点。如果 index 等于链表的长度，则该节点将附加到链表的末尾。如果 index 大于链表长度，则不会插入节点。如果index小于0，则在头部插入节点。
+deleteAtIndex(index)：如果索引 index 有效，则删除链表中的第 index 个节点。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/design-linked-list
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+
+class Node(object):
+    def __init__(self, x):
+        self.val = x
+        self.next = None
+
+class MyLinkedList:
+
+    def __init__(self):
+        """
+        Initialize your data structure here.
+        """
+        self.head = Node(0)
+
+    def get(self, index: int) -> int:
+        """
+        Get the value of the index-th node in the linked list. If the index is invalid, return -1.
+        """
+        if index < 0: return -1
+        node = self.head
+        for _ in range(index + 1):
+            if node.next is not None:node = node.next
+            else: return -1
+        return node.val
+    
+    def addAtHead(self, val: int) -> None:
+        """
+        Add a node of value val before the first element of the linked list. After the insertion, the new node will be the first node of the linked list.
+        """
+        new = Node(val)
+        new.next = self.head.next
+        self.head.next = new
+        
+
+    def addAtTail(self, val: int) -> None:
+        """
+        Append a node of value val to the last element of the linked list.
+        """
+        node = self.head
+        while node.next is not None:
+            node = node.next
+        node.next = Node(val)
+
+    def addAtIndex(self, index: int, val: int) -> None:
+        """
+        Add a node of value val before the index-th node in the linked list. If index equals to the length of linked list, the node will be appended to the end of linked list. If index is greater than the length, the node will not be inserted.
+        """
+        node = self.head
+        for i in range(index):
+            if node is None:
+                return 
+            node = node.next
+        if node is None:
+            node = Node(val)
+        else:
+            new = Node(val)
+            new.next = node.next
+            node.next = new
+
+    def deleteAtIndex(self, index: int) -> None:
+        """
+        Delete the index-th node in the linked list, if the index is valid.
+        """
+        if index < 0: return
+        node = self.head
+        for _ in range(index):
+            node = node.next
+        if node.next is not None:
+            node.next = node.next.next
+
+
+双指针技巧:
+快慢指针，一个跑的快，跑的慢
+力扣141.环形链表
+给定一个链表，判断链表中是否有环。
+
+为了表示给定链表中的环，我们使用整数 pos 来表示链表尾连接到链表中的位置（索引从 0 开始）。 如果 pos 是 -1，则在该链表中没有环。
+
+ 
+
+示例 1：
+
+输入：head = [3,2,0,-4], pos = 1
+输出：true
+解释：链表中有一个环，其尾部连接到第二个节点。
+
+
+示例 2：
+
+输入：head = [1,2], pos = 0
+输出：true
+解释：链表中有一个环，其尾部连接到第一个节点。
+
+
+示例 3：
+
+输入：head = [1], pos = -1
+输出：false
+解释：链表中没有环。
+
+
+ 
+
+进阶：
+
+你能用 O(1)（即，常量）内存解决此问题吗？
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/linked-list-cycle
+
+# Definition for singly-linked list.
+# class ListNode:
+#     def __init__(self, x):
+#         self.val = x
+#         self.next = None
+
+class Solution:
+    def hasCycle(self, head: ListNode) -> bool:
+        #双指针
+        if not head:
+            return False
+        slow = head  # 每次走一步
+        fast = head  # 每次走两步
+        
+        while slow and fast:
+            slow = slow.next
+            
+            if not fast.next:   # 若没有fast.next，则链表不是环形链表
+                return False
+            fast = fast.next.next
+            
+            if slow == fast:
+                return True
+        return False
+
+力扣142.环形链表II
+给定一个链表，返回链表开始入环的第一个节点。 如果链表无环，则返回 null。
+
+为了表示给定链表中的环，我们使用整数 pos 来表示链表尾连接到链表中的位置（索引从 0 开始）。 如果 pos 是 -1，则在该链表中没有环。
+
+说明：不允许修改给定的链表。
+
+ 
+
+示例 1：
+
+输入：head = [3,2,0,-4], pos = 1
+输出：tail connects to node index 1
+解释：链表中有一个环，其尾部连接到第二个节点。
+
+
+示例 2：
+
+输入：head = [1,2], pos = 0
+输出：tail connects to node index 0
+解释：链表中有一个环，其尾部连接到第一个节点。
+
+
+示例 3：
+
+输入：head = [1], pos = -1
+输出：no cycle
+解释：链表中没有环。
+
+进阶：
+你是否可以不用额外空间解决此题？
+
+思路:双指针:慢指针每次走一步，快指针每次走2步
+1、假设x为头到环起点的距离，y到起点到两个指针相遇的距离，c为环的周长
+2、我们可以知道慢指针走的长度为(x+n1c+y),其中n1非负整数，则快指针为走的长度为慢指针的2倍，即2(x+n1c+y)
+3、我们可以知道快指针肯定都走过头到环起点的长度，其他时候都在走环，即快指针比慢指针多长n2个c的长度
+即x+y = n2c。
+4、有3可以知道，x+y的距离肯定是周长的整数倍，即从相遇位置在走x步，就可以到达环起点的位置
+5、则可以让快指针从头开始走，并且每次只走一步，慢指针从相遇位置开始走，每次也只走一步，这样当快慢指针相等的时候的节点，就是环起点。
+
+# Definition for singly-linked list.
+# class ListNode:
+#     def __init__(self, x):
+#         self.val = x
+#         self.next = None
+
+class Solution:
+    def detectCycle(self, head: ListNode) -> ListNode:
+        # 哈希
+        # dict = {} 
+        # current = head
+        # index = 0
+        # while current:
+        #     dict[current] = index
+        #     current = current.next
+        #     if current in dict:
+        #         return current
+        #     index += 1
+        slow = head
+        fast = head
+        sign = False
+        while slow and fast:
+            if not fast.next:
+                return None
+            slow, fast = slow.next, fast.next.next
+            if slow == fast:
+                sign = True
+                fast = head
+                break
+        if sign:
+            while fast !=slow:
+                fast, slow = fast.next, slow.next
+            return slow
+        else:
+            return None
+力扣160.相交链表
+编写一个程序，找到两个单链表相交的起始节点。
+
+如下面的两个链表：
+
+
+
+在节点 c1 开始相交。
+
+ 
+
+示例 1：
+
+
+
+输入：intersectVal = 8, listA = [4,1,8,4,5], listB = [5,0,1,8,4,5], skipA = 2, skipB = 3
+输出：Reference of the node with value = 8
+输入解释：相交节点的值为 8 （注意，如果两个列表相交则不能为 0）。从各自的表头开始算起，链表 A 为 [4,1,8,4,5]，链表 B 为 [5,0,1,8,4,5]。在 A 中，相交节点前有 2 个节点；在 B 中，相交节点前有 3 个节点。
+ 
+
+示例 2：
+
+
+
+输入：intersectVal = 2, listA = [0,9,1,2,4], listB = [3,2,4], skipA = 3, skipB = 1
+输出：Reference of the node with value = 2
+输入解释：相交节点的值为 2 （注意，如果两个列表相交则不能为 0）。从各自的表头开始算起，链表 A 为 [0,9,1,2,4]，链表 B 为 [3,2,4]。在 A 中，相交节点前有 3 个节点；在 B 中，相交节点前有 1 个节点。
+ 
+
+示例 3：
+
+
+
+输入：intersectVal = 0, listA = [2,6,4], listB = [1,5], skipA = 3, skipB = 2
+输出：null
+输入解释：从各自的表头开始算起，链表 A 为 [2,6,4]，链表 B 为 [1,5]。由于这两个链表不相交，所以 intersectVal 必须为 0，而 skipA 和 skipB 可以是任意值。
+解释：这两个链表不相交，因此返回 null。
+ 
+
+注意：
+
+如果两个链表没有交点，返回 null.
+在返回结果后，两个链表仍须保持原有的结构。
+可假定整个链表结构中没有循环。
+程序尽量满足 O(n) 时间复杂度，且仅用 O(1) 内存。
+Definition for singly-linked list.
+class ListNode:
+    def __init__(self, x):
+        self.val = x
+        self.next = None
+
+思路:法一：注释有详解
+	法二:双指针
+		一个指向A头部
+		一个指向B头部
+		A走一步，B就走一步，A走到尽头的时候，将其指向B的头部，B走到尽头的时候，将其指向A的头部，当两个指针相遇的时候，要没是相交的节点，要么就是没有节点
+
+		假设a为链表A到相交节点距离，b为链表B到相交节点的距离，y为相交节点到尾部的距离
+	则A指针总共走的距离就是a+y+b，b总共走的距离就是b+y+a，两个走的距离是相等的，所以当两个指针相等的时候，要么是None，要么是相交节点。
+		
+
+
+class Solution:
+    def getIntersectionNode(self, headA: ListNode, headB: ListNode) -> ListNode:
+        # 法1
+        if not (headA and headB):
+            return None
+        current_listA = headA
+        current_listB = headB
+        countA = 0
+        countB = 0
+        # 先判断是否是相交链表
+        while current_listA.next or current_listB.next:
+            if current_listA.next:
+                current_listA = current_listA.next
+                countA += 1
+            if current_listB.next:
+                current_listB = current_listB.next
+                countB += 1
+        if current_listB != current_listA:
+            return None
+        current_listA = headA
+        current_listB = headB
+        '''
+          若两个链表相交，A的链表总大小 - B的链表总大小 = A的链表到相交点的长度 - B链表到相交点的长度,
+        然后再将长的链表走相差的长度；然后在两个链表同时走，当两个链表的节点相等的时候，便是相交的节点。
+        '''
+        ApoorB = abs(countA - countB)
+        if countA < countB:
+            current_listA, current_listB = current_listB, current_listA
+        for i in range(ApoorB):
+            current_listA = current_listA.next
+        while current_listA != current_listB:
+            current_listB = current_listB.next
+            current_listA = current_listA.next
+        return current_listA
+        # 法2
+        if not (headA and headB):
+            return None
+        # a + y + b = b + y + a
+        pA = headA
+        pB = headB
+        while pA != pB:
+            pA = headB if not pA else pA.next
+            pB = headA if not pB else pB.next
+        return pA
+
+力扣19.删除倒数第N个节点
+给定一个链表，删除链表的倒数第 n 个节点，并且返回链表的头结点。
+
+示例：
+
+给定一个链表: 1->2->3->4->5, 和 n = 2.
+
+当删除了倒数第二个节点后，链表变为 1->2->3->5.
+说明：
+
+给定的 n 保证是有效的。
+
+进阶：
+
+你能尝试使用一趟扫描实现吗？
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/remove-nth-node-from-end-of-list
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+
+# Definition for singly-linked list.
+# class ListNode:
+#     def __init__(self, x):
+#         self.val = x
+#         self.next = None
+
+#思路:双指针
+	慢指针指向头节点，快指针先到达第n个节点，则他们的距离就相差n的距离，两个指针的步长皆为1
+当快指针达到尾部的时候，慢指针则是在倒数第n个节点前面的一个节点，此时只需要将slow.next = slow.next.next, 就能将倒数第n个节点删除。
+
+
+class Solution:
+    def removeNthFromEnd(self, head: ListNode, n: int) -> ListNode:
+        placeholder = ListNode(0)
+        placeholder.next = head
+        slow = placeholder
+        fast = placeholder
+        for _ in range(n+1):
+            fast = fast.next
+        while fast:
+            slow = slow.next
+            fast = fast.next
+        slow.next = slow.next.next
+        return placeholder.next
+
+力扣.反转链表。
+
+示例:
+
+输入: 1->2->3->4->5->NULL
+输出: 5->4->3->2->1->NULL
+进阶:
+你可以迭代或递归地反转链表。你能否用两种方法解决这道题？
+
+
+#思路:要反转一个链表，只需要将当前位置的节点的next指向上一个节点即可。此时就需要保存下一个节点的地址，和上一个节点。
+
+# Definition for singly-linked list.
+# class ListNode:
+#     def __init__(self, x):
+#         self.val = x
+#         self.next = None
+
+class Solution:
+    def reverseList(self, head: ListNode) -> ListNode:
+        previous = None
+        current = head
+        while current:
+            temp = current.next     # 保存下一个节点的信息
+            current.next = previous # 将当前节点的next指向上一个节点
+            previous = current      
+            current = temp
+        return previous

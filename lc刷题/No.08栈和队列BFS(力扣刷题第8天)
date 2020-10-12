@@ -1,0 +1,109 @@
+BFS(广度优先搜索)
+广泛应用于树(图)结构中的遍历的算法: 先遍历根节点周围的节点，然后向四周扩散，最后访问到最后一个节点
+
+力扣286.墙与门
+你被给定一个 m × n 的二维网格，网格中有以下三种可能的初始化值：
+
+-1 表示墙或是障碍物
+0 表示一扇门
+INF 无限表示一个空的房间。然后，我们用 231 - 1 = 2147483647 代表 INF。你可以认为通往门的距离总是小于 2147483647 的。
+你要给每个空房间位上填上该房间到 最近 门的距离，如果无法到达门，则填 INF 即可。
+
+示例：
+
+给定二维网格：
+
+INF  -1  0  INF
+INF INF INF  -1
+INF  -1 INF  -1
+  0  -1 INF INF
+运行完你的函数后，该网格应该变成：
+
+  3  -1   0   1
+  2   2   1  -1
+  1  -1   2  -1
+  0  -1   3   4
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/walls-and-gates
+
+#思路:1、确定根节点，找到二位网格中为0的门和为-1的墙。
+	 2、给定一个标志网格，确定网格中相同位置是墙还是门还是空房间
+	 3、给定一个遍历的方向(上[-1,0]、下[1,0]、左[0,-1]、右[0,1])
+	 4、确定到达该位置的索引是否超出范围。且该位置是空房间
+	 5、每次循环都要讲队列中的数据遍历完，这样能够保证让多个房间或门同时进行BFS，这样便会知道谁先进入该房间，该房间便是最短距离
+
+from collections import deque  # 引用队列模块
+
+class Solution:
+    def __init__(self):
+        # 定义4个方向分别为右、左、上、下
+        self.directions = [[0,-1], [0,1], [-1,0], [1,0]]
+    def wallsAndGates(self, rooms: List[List[int]]) -> None:
+        """
+        Do not return anything, modify rooms in-place instead.
+        """
+        m = len(rooms)
+        if m == 0:
+            return rooms
+        n = len(rooms[0])
+        marked = [[False for _ in range(n)] for _ in range (m)] # 对每个位置进行标记，若此位置设置了房间或为墙或为门，则设这个位置问True
+        queue = deque()
+        distance = 0
+        for i in range(m):
+            for j in range(n):
+                if rooms[i][j] == 0:
+                    marked[i][j] = True
+                    queue.append((i, j))
+                elif rooms[i][j] == -1:
+                    marked[i][j] = True
+        while queue:
+            distance += 1
+            queue_size = len(queue)     # 每次循环将队列中的值取空，这样能让多个门进行BFS，此时当谁先到该房间，谁就是门到该房间的最短距离
+            for _ in range(queue_size):
+                x,y = queue.popleft()
+                for direction in self.directions:           # 对此位置的四个方向进行查询
+                    next_x = x + direction[0]               # 将离(x,y)最近的4个位置进行遍历
+                    next_y = y + direction[1]
+                    if 0 <= next_x <= m - 1 and 0 <= next_y <= n -1 and not marked[next_x][next_y]:
+                        rooms[next_x][next_y] = distance
+                        queue.append((next_x, next_y))
+                        marked[next_x][next_y] = True
+        return rooms
+BFS例子
+给定一个二叉树，找出其最小深度。
+
+最小深度是从根节点到最近叶子节点的最短路径上的节点数量。
+
+说明: 叶子节点是指没有子节点的节点。
+
+示例:
+
+给定二叉树 [3,9,20,null,null,15,7],
+
+    3
+   / \
+  9  20
+    /  \
+   15   7
+返回它的最小深度  2.
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/minimum-depth-of-binary-tree
+from collections import deque
+class Solution:
+    def minDepth(self, root: TreeNode) -> int:
+        queue = deque()   # 用队列来存储节点和深度
+        level = 0
+        if root:
+            queue.append((root, 1))
+        while queue:
+            current, current_level = queue.popleft()
+            if not current.left and not current.right:		# 当节点的下一级的左右两边的节点均不存在时，那么此时就返回当前节点的深度
+                return current_level
+            if current.left:
+                queue.append((current.left, current_level+1))
+            if current.right:
+                queue.append((current.right, current_level+1))
+            level = current_level
+        return level

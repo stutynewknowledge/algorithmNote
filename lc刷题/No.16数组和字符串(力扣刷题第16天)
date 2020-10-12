@@ -1,0 +1,244 @@
+字符串:
+力扣刷题67.二进制求和
+给定两个二进制字符串，返回他们的和（用二进制表示）。
+
+输入为非空字符串且只包含数字 1 和 0。
+
+示例 1:
+
+输入: a = "11", b = "1"
+输出: "100"
+示例 2:
+
+输入: a = "1010", b = "1011"
+输出: "10101"
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/add-binary
+
+思路:补全，在利用一个sign观察是否进位
+class Solution:
+    def addBinary(self, a: str, b: str) -> str:
+        if len(a) > len(b):
+            b = b.zfill(len(a))
+        else:
+            a = a.zfill(len(b))
+        n = len(a)
+        sign = 0
+        res = ''
+        for i in range(n-1, -1, -1):
+            sign += (int(a[i]) + int(b[i]))
+            res += str(sign % 2)
+            sign //= 2
+        if sign == 1:
+            res += '1'
+        return res[::-1]
+
+力扣28.实现strStr()
+实现 strStr() 函数。
+
+给定一个 haystack 字符串和一个 needle 字符串，在 haystack 字符串中找出 needle 字符串出现的第一个位置 (从0开始)。如果不存在，则返回  -1。
+
+示例 1:
+
+输入: haystack = "hello", needle = "ll"
+输出: 2
+示例 2:
+
+输入: haystack = "aaaaa", needle = "bba"
+输出: -1
+说明:
+
+当 needle 是空字符串时，我们应当返回什么值呢？这是一个在面试中很好的问题。
+
+对于本题而言，当 needle 是空字符串时我们应当返回 0 。这与C语言的 strstr() 以及 Java的 indexOf() 定义相符。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/implement-strstr
+
+思路:暴力破解
+class Solution:
+    def strStr(self, haystack: str, needle: str) -> int:
+        # 暴力破解
+        n = len(needle)
+        m = len(haystack)
+        if n == 0:
+            return 0
+        for i in range(m):
+            if haystack[i] == needle[0]:
+                if haystack[i: i+n] == needle:
+                    return i
+        return -1
+
+编写一个函数来查找字符串数组中的最长公共前缀。
+
+如果不存在公共前缀，返回空字符串 ""。
+
+示例 1:
+
+输入: ["flower","flow","flight"]
+输出: "fl"
+示例 2:
+
+输入: ["dog","racecar","car"]
+输出: ""
+解释: 输入不存在公共前缀。
+说明:
+
+所有输入只包含小写字母 a-z 。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/longest-common-prefix
+
+思路，利用zip()内置函数和集合去重即解
+class Solution:
+    def longestCommonPrefix(self, strs: List[str]) -> str:
+        res = ''
+        for i in zip(*strs):
+            if len(set(i)) == 1:
+                res += i[0] 
+            else:
+                break
+        return res
+
+双指针技巧：
+	利用一个指针指向始端，另外一个指针指向末端，进行求解
+
+力扣344.反转字符串
+编写一个函数，其作用是将输入的字符串反转过来。输入字符串以字符数组 char[] 的形式给出。
+
+不要给另外的数组分配额外的空间，你必须原地修改输入数组、使用 O(1) 的额外空间解决这一问题。
+
+你可以假设数组中的所有字符都是 ASCII 码表中的可打印字符。
+
+示例 1：
+
+输入：["h","e","l","l","o"]
+输出：["o","l","l","e","h"]
+示例 2：
+
+输入：["H","a","n","n","a","h"]
+输出：["h","a","n","n","a","H"]
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/reverse-string
+
+思路:双指针，一个指针指向始端，另一个指针指向末端
+class Solution:
+    def reverseString(self, s: List[str]) -> None:
+        """
+        Do not return anything, modify s in-place instead.
+        """
+        # 双指针
+        p1 = 0
+        n = len(s)
+        if n == 0:
+            return s
+        p2 = n - 1
+        while p1 < p2:
+            s[p1], s[p2] = s[p2], s[p1]
+            p1 += 1
+            p2 -= 1
+            
+        return s
+法2: return s[::-1]
+
+力扣167.两数之和
+给定一个已按照升序排列 的有序数组，找到两个数使得它们相加之和等于目标数。
+
+函数应该返回这两个下标值 index1 和 index2，其中 index1 必须小于 index2。
+
+说明:
+
+返回的下标值（index1 和 index2）不是从零开始的。
+你可以假设每个输入只对应唯一的答案，而且你不可以重复使用相同的元素。
+示例:
+
+输入: numbers = [2, 7, 11, 15], target = 9
+输出: [1,2]
+解释: 2 与 7 之和等于目标数 9 。因此 index1 = 1, index2 = 2 。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/two-sum-ii-input-array-is-sorted
+
+思路: 因为是上升数组，所以可以用双指针，
+	p1指向始端，p2指向末端
+	当numbers[p1] + numbers[p2]之和大于目标数之时，便可以知道，数字大了，p2应该向前移
+
+class Solution:
+    def twoSum(self, numbers: List[int], target: int) -> List[int]:
+        # numbers已排序，按照双指针时间复杂度为O(logn)
+        n = len(numbers)
+        if n == 0:
+            return ()
+        p1 = 0
+        p2 = n - 1
+        while p1 != p2:
+            sum = numbers[p1] + numbers[p2]
+            if sum < target:
+                p1 += 1
+            elif sum > target:
+                p2 -= 1
+            elif sum == target:
+                return (p1+1, p2+1)
+        return ()
+力扣561.数组拆分
+给定长度为 2n 的数组, 你的任务是将这些数分成 n 对, 例如 (a1, b1), (a2, b2), ..., (an, bn) ，使得从1 到 n 的 min(ai, bi) 总和最大。
+
+示例 1:
+
+输入: [1,4,3,2]
+
+输出: 4
+解释: n 等于 2, 最大总和为 4 = min(1, 2) + min(3, 4).
+提示:
+
+n 是正整数,范围在 [1, 10000].
+数组中的元素范围在 [-10000, 10000].
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/array-partition-i
+
+思路: 先对数组进行排序，然后第基数个数字求和
+
+class Solution:
+    def arrayPairSum(self, nums: List[int]) -> int:
+        nums.sort()
+        n = len(nums)
+        sum = 0
+        for i in range(0,n,2):
+            sum += nums[i]
+        return sum
+                
+力扣1.两数之和
+给定一个整数数组 nums 和一个目标值 target，请你在该数组中找出和为目标值的那 两个 整数，并返回他们的数组下标。
+
+你可以假设每种输入只会对应一个答案。但是，你不能重复利用这个数组中同样的元素。
+
+示例:
+
+给定 nums = [2, 7, 11, 15], target = 9
+
+因为 nums[0] + nums[1] = 2 + 7 = 9
+所以返回 [0, 1]
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/two-sum
+
+思路:方法1、哈希，通过一个字典，存储值和对应的索引
+	方法2、先排序，在利用双指针
+
+class Solution:
+    def twoSum(self, nums: List[int], target: int) -> List[int]:
+        dict = {}
+        n = len(nums)
+        for i in range(n):
+            dict[nums[i]] = i
+        return dict
+        for i in range(n):
+            right = target - nums[i]
+            if dict.get(right):
+                if dict.get(right) != i:
+                    return (i, dict[right])
+        return ()
+

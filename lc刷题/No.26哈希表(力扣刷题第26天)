@@ -1,0 +1,331 @@
+力扣350.两个数组的交集II
+给定两个数组，编写一个函数来计算它们的交集。
+
+示例 1:
+
+输入: nums1 = [1,2,2,1], nums2 = [2,2]
+输出: [2,2]
+示例 2:
+
+输入: nums1 = [4,9,5], nums2 = [9,4,9,8,4]
+输出: [4,9]
+说明：
+
+输出结果中每个元素出现的次数，应与元素在两个数组中出现的次数一致。
+我们可以不考虑输出结果的顺序。
+进阶:
+
+如果给定的数组已经排好序呢？你将如何优化你的算法？
+如果 nums1 的大小比 nums2 小很多，哪种方法更优？
+如果 nums2 的元素存储在磁盘上，磁盘内存是有限的，并且你不能一次加载所有的元素到内存中，你该怎么办？
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/intersection-of-two-arrays-ii
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+
+解题思路:
+	进阶1，当数组为有序数组的时候,利用双指针
+代码:
+class Solution:
+    def intersect(self, nums1: List[int], nums2: List[int]) -> List[int]:
+        # 对两个数组进行排序
+        nums1.sort()
+        nums2.sort()
+        # 利用两个指针来表示nums1 和 num2的索引
+        p_nums1 = p_nums2 = 0
+        # result保存结果集
+        result = []
+        size1, size2 = len(nums1), len(nums2)
+        # 循环
+        while p_nums1 < size1 and p_nums2 < size2:
+            # 当 nums1[p_nums1] 比 nums2[p_nums2] 小的时候, 就将p_nums1 + 1, 此时只有nums1[p_nums1]后面的数字才可能与nums2[p_nums2]相等
+            if nums1[p_nums1] < nums2[p_nums2]:
+                p_nums1 += 1
+            # 当 nums1[p_nums1] 与 nums2[p_nums2] 相等时候, 就将p_nums1和p_nums2同时加1,此时这个数字才是我们的目标数，将其扔入结果集。
+            elif nums1[p_nums1] == nums2[p_nums2]:
+                result.append(nums1[p_nums1])
+                p_nums1 += 1
+                p_nums2 += 1
+            # 当 nums1[p_nums1] 比 nums2[p_nums2] 大的时候, 就将p_nums2 + 1, 此时只有nums2[p_nums2]后面的数字才可能与nums1[p_nums1]相等
+            else:
+                p_nums2 += 1
+        return result
+解题思路:
+	进阶2: 空间换时间， 当一个足够小的时候，就先遍历小的来存进字典，在遍历大的， 当dict空了的时候， 退出循环
+
+代码:
+class Solution:
+    def intersect(self, nums1: List[int], nums2: List[int]) -> List[int]:
+        # 将大的数组变为nums1， 小的变为nums2
+        if len(nums1) > len(nums2):
+            nums1, nums2 = nums2, nums1
+        size1 = len(nums1)
+        size2 = len(nums2)
+        dict = {}
+        result = []
+        # 遍历小的数组，将其存入字典，key为数组中的数字，value为数组的索引，用列表来存储
+        for i in range(size2):
+            if nums2[i] in dict:
+                dict[nums2[i]].append(i)
+            else:
+                dict[nums2[i]] = [i, ]
+        # 遍历大的数组， 当数组中的数字在字典中，则将value删除一个。
+        # 若key中的value为空的话，则将其从字典中删除。
+        # 若字典为空时，退出循环，返回结果
+        for i in range(size1):
+            if nums1[i] in dict:
+                if not dict:
+                    break
+                if dict[nums1[i]]:
+                    dict[nums1[i]].pop()
+                    result.append(nums1[i])
+                    if not dict[nums1[i]]:
+                        dict.pop(nums1[i])
+        return result
+
+力扣387.字符串中第一个唯一字符
+给定一个字符串，找到它的第一个不重复的字符，并返回它的索引。如果不存在，则返回 -1。
+
+案例:
+
+s = "leetcode"
+返回 0
+
+s = "loveleetcode",
+返回 2
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/first-unique-character-in-a-string
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+
+1、遍历字符串s, 将字符串的每一个字符存入字典
+	- 字典的key为每一个字符，value为一个列表，存2个值，一个为当前字符出现的次数，另一个为第一次出现该字符的索引
+2、设置一个变量来存储当前第一个唯一的字符的索引, 初始值为正无穷大float('INF')
+3、遍历字典:
+	- 当字典中的value中的次数等于1时，便拿出当前索引与min_index进行比较，谁小，则min_index就为谁
+4、最后当min_index仍然为无穷大，则没有唯一字符，返回-1
+
+ps:
+做题时，我出现过的问题
+在第一次遍历的时候，当出现重复字符时，为什么没有将其从字典中删除?
+因为将其删除后，后面又出现该字符时，就会使得字典又将其存储一遍，此时便会导致结果出错
+
+代码
+class Solution:
+    def firstUniqChar(self, s: str) -> int:
+        size = len(s)
+        dict = {}
+        for i in range(size):
+            if s[i] in dict:
+                dict[s[i]][0] += 1
+            else:
+                dict[s[i]] = [1, i]
+        min_index = float('INF')
+        for key in dict:
+            if dict[key][0] == 1:
+                min_index = dict[key][1] if dict[key][1] < min_index else min_index
+        if min_index == float('INF'):
+            return -1
+        return min_index
+
+力扣219.存在重复元素
+给定一个整数数组和一个整数 k，判断数组中是否存在两个不同的索引 i 和 j，使得 nums [i] = nums [j]，并且 i 和 j 的差的绝对值最大为 k。
+
+示例 1:
+
+输入: nums = [1,2,3,1], k = 3
+输出: true
+示例 2:
+
+输入: nums = [1,0,1,1], k = 1
+输出: true
+示例 3:
+
+输入: nums = [1,2,3,1,2,3], k = 2
+输出: false
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/contains-duplicate-ii
+
+解题思路:
+	哈希映射
+代码:
+class Solution:
+    def containsNearbyDuplicate(self, nums: List[int], k: int) -> bool:
+        size = len(nums)
+        if size == 0:
+            return False
+        dict = {}
+        for i in range(size):
+            if nums[i] in dict and i - dict[nums[i]] <= k:
+                return True
+            dict[nums[i]] = i
+        return False
+
+力扣359.日志速率限制器
+请你设计一个日志系统，可以流式接收日志以及它的时间戳。
+
+该日志会被打印出来，需要满足一个条件：当且仅当日志内容 在过去的 10 秒钟内没有被打印过。
+
+给你一条日志的内容和它的时间戳（粒度为秒级），如果这条日志在给定的时间戳应该被打印出来，则返回 true，否则请返回 false。
+
+要注意的是，可能会有多条日志在同一时间被系统接收。
+
+示例：
+
+Logger logger = new Logger();
+
+// 日志内容 "foo" 在时刻 1 到达系统
+logger.shouldPrintMessage(1, "foo"); returns true; 
+
+// 日志内容 "bar" 在时刻 2 到达系统
+logger.shouldPrintMessage(2,"bar"); returns true;
+
+// 日志内容 "foo" 在时刻 3 到达系统
+logger.shouldPrintMessage(3,"foo"); returns false;
+
+// 日志内容 "bar" 在时刻 8 到达系统
+logger.shouldPrintMessage(8,"bar"); returns false;
+
+// 日志内容 "foo" 在时刻 10 到达系统
+logger.shouldPrintMessage(10,"foo"); returns false;
+
+// 日志内容 "foo" 在时刻 11 到达系统
+logger.shouldPrintMessage(11,"foo"); returns true;
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/logger-rate-limiter
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+
+解题思路:
+	哈希映射
+代码:
+class Logger:
+
+    def __init__(self):
+        """
+        Initialize your data structure here.
+        """
+        self.dict = {}
+
+    def shouldPrintMessage(self, timestamp: int, message: str) -> bool:
+        """
+        Returns true if the message should be printed in the given timestamp, otherwise returns false.
+        If this method returns false, the message will not be printed.
+        The timestamp is in seconds granularity.
+        """
+        if message not in self.dict:
+            self.dict[message] = timestamp
+            return True
+        elif timestamp - self.dict[message] < 10:
+            return False
+        elif timestamp - self.dict[message] >= 10:
+            self.dict[message] = timestamp
+            return True
+
+
+力扣49.字母异位词分组
+给定一个字符串数组，将字母异位词组合在一起。字母异位词指字母相同，但排列不同的字符串。
+
+示例:
+
+输入: ["eat", "tea", "tan", "ate", "nat", "bat"],
+输出:
+[
+  ["ate","eat","tea"],
+  ["nat","tan"],
+  ["bat"]
+]
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/group-anagrams
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+
+解题思路:
+	哈希映射
+	通过将字符串进行排序，排序过后的字符串作为key
+class Solution:
+    def groupAnagrams(self, strs: List[str]) -> List[List[str]]:
+        size = len(strs)
+        if size == 0:
+            return strs
+        dict = {}
+        for i in range(size):
+            str_sort = ''.join(sorted(strs[i]))
+            if str_sort in dict:
+                dict[str_sort].append(strs[i])
+            else:
+                dict[str_sort] = [strs[i], ]
+        result = []
+        for key in dict:
+            result.append(dict[key])
+        return result
+
+
+力扣249.移位字符串分组
+给定一个字符串，对该字符串可以进行 “移位” 的操作，也就是将字符串中每个字母都变为其在字母表中后续的字母，比如："abc" -> "bcd"。这样，我们可以持续进行 “移位” 操作，从而生成如下移位序列：
+
+"abc" -> "bcd" -> ... -> "xyz"
+给定一个包含仅小写字母字符串的列表，将该列表中所有满足 “移位” 操作规律的组合进行分组并返回。
+
+示例：
+
+输入: ["abc", "bcd", "acef", "xyz", "az", "ba", "a", "z"]
+输出: 
+[
+  ["abc","bcd","xyz"],
+  ["az","ba"],
+  ["acef"],
+  ["a","z"]
+]
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/group-shifted-strings
+
+
+解题思路:
+	1、题很容易想到可以用哈希，但是最大的难点是key的设计
+		- 什么样的字符串可以为一类？
+		- 当字符串的首字母移动为'a'时，同一类的字符串则完全相同 如:'cba' --> 'azy', 'dcb' ---> 'azy';此时我们就可以将'azy'作为key
+	2、此时我们只需要将字符串数组中的每一个字符串的首字母变为'a'， 在与观察新的字符串是否在字典中，若在，将旧的字符串append进字典的value中
+	3、最后将字典的每个值append进一个列表中
+	4、返回此列表
+
+代码:
+class Solution:
+    def groupStrings(self, strings: List[str]) -> List[List[str]]:
+        # 定义一个函数，返回旧字符串首字母变为'a'时形成的新字符串
+        def strChange(string):
+            if string[0] == 'a':    
+                return string
+            size = len(string)
+            head_poor = ord(string[0]) - 97     # 计算旧字符串与首字母'a'的ascii相差多少
+            target = ''
+            # 循环旧字符串中的每一个字符， 将每一个字符均减去相差的值
+            for i in range(size):
+                str_asc = ord(string[i]) - head_poor
+                # 此时需要注意，当字符比97小时，就需要另行比较
+                if str_asc < 97:
+                    # str_asc = 122 - (97 - str_asc) + 1
+                    str_asc = 26 + str_asc
+                target += chr(str_asc)
+            return target
+        size = len(strings)
+        dict = {}
+        if size == 0:
+            return []
+        for i in range(size):
+            str_change = strChange(strings[i])
+            if str_change in dict:
+                dict[str_change].append(strings[i])
+            else:
+                dict[str_change] = [strings[i], ]
+        result = []
+        for key in dict:
+            result.append(dict[key])
+        return result
+
+作者：xu-xu-15
+链接：https://leetcode-cn.com/problems/group-shifted-strings/solution/python3-zhong-ji-xiao-bai-fen-xiang-40ms-by-xu-xu-/
+来源：力扣（LeetCode）
+著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。

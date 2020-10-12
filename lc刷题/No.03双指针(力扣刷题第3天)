@@ -1,0 +1,81 @@
+链表定义:是数据项的集合,每一个数据项被称为一个节点,每个节点包含自身的数据和下一个节点的位置
+ps:1、head永远指向链表的头部
+   2、链表的最后一个节点的next指向None
+
+
+用python的类来实现单向链表:
+class ListNode:
+	def __init__(self, data):
+		self.data = data	# 存储此节点的数据
+		self.next = None 	# 存储下一个节点的位置
+node1 = ListNode(11)
+node2 = ListNode(12)
+node1.next = node2
+
+
+不能使用head来直接遍历链表。可以创建一个临时的变量来进行。
+
+力扣21
+将两个有序链表合并为一个新的有序链表并返回。新链表是通过拼接给定的两个链表的所有节点组成的。 
+示例：
+输入：1->2->4, 1->3->4
+输出：1->1->2->3->4->4
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/merge-two-sorted-lists
+
+思路:迭代
+	1、创建一个新的表头new_head,将其赋值给p,
+	2、比较l1 和 l2链表的大小，将小的链表的节点复制给p.next，并且使小的节点的next复制给自身。
+	3、在让p = p.next
+	4、当l1和l2的其中一个链表为空后，退出迭代，然后将没有为空的链表的节点复制给p.next。
+	5、最后返回new_head.next
+
+class Solution(object):
+    def mergeTwoLists(self, l1, l2):
+        """
+        :type l1: ListNode
+        :type l2: ListNode
+        :rtype: ListNode
+        """
+        new_head = ListNode(-1)
+        p = new_head
+        while l1 and l2:
+            if l1.val < l2.val:
+                p.next = l1
+                l1 = l1.next
+            else:
+                p.next = l2
+                l2 = l2.next
+            p = p.next
+        p.next = l1 if l1 else l2
+        return new_head.next
+力扣83、删除排序链表中的重复元素
+给定一个排序链表，删除所有重复的元素，使得每个元素只出现一次。
+示例 1:
+输入: 1->1->2
+输出: 1->2
+示例 2:
+输入: 1->1->2->3->3
+输出: 1->2->3
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/remove-duplicates-from-sorted-list
+
+思路:迭代
+	1、判断节点的值和下一个节点的值是否相等
+	2、若相等，则将删除下一个节点，即p.next = p.next.next
+	3、若不想等，在判断下一个节点与下下一个节点的值是否相等,即p = p.next
+class Solution(object):
+    def deleteDuplicates(self, head):
+        """
+        :type head: ListNode
+        :rtype: ListNode
+        """
+        p = head
+        while p and p.next != None:
+            if p.val == p.next.val:
+                p.next = p.next.next
+            else:
+                p = p.next
+        return head
+
+

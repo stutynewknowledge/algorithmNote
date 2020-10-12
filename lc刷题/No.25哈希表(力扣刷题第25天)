@@ -1,0 +1,188 @@
+力扣202.快乐数
+编写一个算法来判断一个数是不是“快乐数”。
+
+一个“快乐数”定义为：对于一个正整数，每一次将该数替换为它每个位置上的数字的平方和，然后重复这个过程直到这个数变为 1，也可能是无限循环但始终变不到 1。如果可以变为 1，那么这个数就是快乐数。
+
+示例: 
+
+输入: 19
+输出: true
+解释: 
+12 + 92 = 82
+82 + 22 = 68
+62 + 82 = 100
+12 + 02 + 02 = 1
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/happy-number
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+
+
+class Solution:
+    def isHappy(self, n: int) -> bool:
+        '''
+        思路: 创建一个哈希集合，当平方和在哈希集合中，则不是快乐数，当不在哈希集合且不为1的时候，则将此和的字符串形式放入哈希集合中，为1的时候，则
+    为快乐数。
+        '''
+        visited = set()
+        str_n = str(n)
+        sum_n = 0
+        while str_n not in visited:
+            for i in str_n:
+                sum_n += (int(i)) ** 2
+            if sum_n == 1:
+                return True
+            elif str(sum_n) in visited:
+                return False
+            else:
+                visited.add(str_n)
+                str_n = str(sum_n)
+                sum_n = 0
+
+
+1、两数之和
+给定一个整数数组 nums 和一个目标值 target，请你在该数组中找出和为目标值的那 两个 整数，并返回他们的数组下标。
+
+你可以假设每种输入只会对应一个答案。但是，你不能重复利用这个数组中同样的元素。
+
+示例:
+
+给定 nums = [2, 7, 11, 15], target = 9
+
+因为 nums[0] + nums[1] = 2 + 7 = 9
+所以返回 [0, 1]
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/two-sum
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+
+class Solution:
+    def twoSum(self, nums: List[int], target: int) -> List[int]:
+        dict = {}
+        size = len(nums)
+        for i in range(size):
+            right = target - nums[i]
+            if right in dict:
+                return [dict[right], i]
+            dict[nums[i]] = i
+
+
+力扣205.同构字符串
+给定两个字符串 s 和 t，判断它们是否是同构的。
+
+如果 s 中的字符可以被替换得到 t ，那么这两个字符串是同构的。
+
+所有出现的字符都必须用另一个字符替换，同时保留字符的顺序。两个字符不能映射到同一个字符上，但字符可以映射自己本身。
+
+示例 1:
+
+输入: s = "egg", t = "add"
+输出: true
+示例 2:
+
+输入: s = "foo", t = "bar"
+输出: false
+示例 3:
+
+输入: s = "paper", t = "title"
+输出: true
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/isomorphic-strings
+著作权归领扣网络所有。商业转载请联系官方授权，非商业转载请注明出处。
+
+
+class Solution:
+    def isIsomorphic(self, s: str, t: str) -> bool:
+        '''
+        法一:两个字典存s和t
+        '''
+        # hash_dict_s = {}
+        # hash_dict_t = {}
+        # size = len(s)
+        # for i in range(size):
+        #     if s[i] in hash_dict_s:
+        #         hash_dict_s[s[i]].append(i)
+        #     else:
+        #         hash_dict_s[s[i]] = [i, ]
+        #     if t[i] in hash_dict_t:
+        #         hash_dict_t[t[i]].append(i)
+        #         if hash_dict_t[t[i]] != hash_dict_s[s[i]]:
+        #             return False
+        #     else:
+        #         hash_dict_t[t[i]] = [i, ]
+        # for i in range(size):
+        #     if hash_dict_s[s[i]] != hash_dict_t[t[i]]:
+        #         return False
+        # return True
+        '''
+        法二: 一个字典，key为s， value为t
+        '''
+        hash_dict = {}
+        size = len(s)
+        for i in range(size):
+            if hash_dict.get(s[i]):
+                if hash_dict.get(s[i]) != t[i]:
+                    return False
+            else:
+                if t[i] in hash_dict.values():
+                    return False
+                hash_dict[s[i]] = t[i]
+        return True
+        '''
+        法三: map内置函数和index方法
+        '''      
+        # return [*map(s.index, s)] == [*map(t.index, t)]        
+
+
+
+力扣599.两个列表的最小索引和
+假设Andy和Doris想在晚餐时选择一家餐厅，并且他们都有一个表示最喜爱餐厅的列表，每个餐厅的名字用字符串表示。
+
+你需要帮助他们用最少的索引和找出他们共同喜爱的餐厅。 如果答案不止一个，则输出所有答案并且不考虑顺序。 你可以假设总是存在一个答案。
+
+示例 1:
+
+输入:
+["Shogun", "Tapioca Express", "Burger King", "KFC"]
+["Piatti", "The Grill at Torrey Pines", "Hungry Hunter Steakhouse", "Shogun"]
+输出: ["Shogun"]
+解释: 他们唯一共同喜爱的餐厅是“Shogun”。
+示例 2:
+
+输入:
+["Shogun", "Tapioca Express", "Burger King", "KFC"]
+["KFC", "Shogun", "Burger King"]
+输出: ["Shogun"]
+解释: 他们共同喜爱且具有最小索引和的餐厅是“Shogun”，它有最小的索引和1(0+1)。
+
+来源：力扣（LeetCode）
+链接：https://leetcode-cn.com/problems/minimum-index-sum-of-two-lists
+
+class Solution:
+	'''
+	思路:
+		1、遍历list1, 将其放入字典中, key为list[i], value为索引,
+		2、遍历list2, 当list2[i]在字典的key中，现在的索引总和i+dict[list2[i]]
+			然后与现在的最小索引总和比较，若比现在的最小索引总和小，则将结果列表清空，若相同，则添加
+		3、最后返回结果列表
+	'''
+    def findRestaurant(self, list1: List[str], list2: List[str]) -> List[str]:
+        list1_size = len(list1)
+        list2_size = len(list2)
+        dict = {}
+        result = []
+        min_index_sum = float('INF')
+        for i in range(list1_size):
+            dict[list1[i]] = i
+        for i in range(list2_size):
+            if list2[i] in dict:
+                now_index_sum = dict[list2[i]] + i
+                if now_index_sum < min_index_sum:
+                    min_index_sum = now_index_sum
+                    result.clear()
+                    result.append(list2[i])
+                elif now_index_sum == min_index_sum:
+                    result.append(list2[i])
+        return result
+        
