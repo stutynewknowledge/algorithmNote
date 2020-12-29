@@ -1,5 +1,6 @@
 package maxEnvelopes;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -13,12 +14,20 @@ public class Solution {
         if(n == 0){
             return 0;
         }
-        Arrays.sort(envelopes, (int[] a, int[]b) -> {
+//        Arrays.sort(envelopes, (int[] a, int[]b) -> {
+//            if (a[0] != b[0]){
+//                return a[0] - b[0];
+//            }
+//            return b[1] - a[1];
+//        });
+
+        Arrays.stream(envelopes).sorted((int[] a, int[] b) ->{
             if (a[0] != b[0]){
                 return a[0] - b[0];
             }
             return b[1] - a[1];
         });
+
         for (int[] envelope : envelopes) {
             for (int i : envelope) {
                 System.out.print(i + " ");
