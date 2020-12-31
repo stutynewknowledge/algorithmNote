@@ -1,4 +1,4 @@
-package deleteAndEarn;
+package rob.deleteAndEarn;
 
 /**
  *  删除与获得点数
@@ -31,4 +31,29 @@ package deleteAndEarn;
  * 题目源自：https://leetcode-cn.com/problems/delete-and-earn/
  */
 public class Solution {
+    public int deleteAndEarn(int[] nums) {
+        if(nums == null || nums.length == 0){
+            return 0;
+        }
+        if(nums.length == 1){
+            return nums[0];
+        }
+        int maxNum = Integer.MIN_VALUE;
+        int n = nums.length;
+        for (int i = 0; i < n; i++) {
+            maxNum = Math.max(nums[i], maxNum);
+        }
+        int[] newNum = new int[maxNum+1];
+        for (int i = 0; i < n; i++) {
+            newNum[nums[i]] += 1;
+        }
+        int[] dp = new int[maxNum+1];
+        dp[0] = 0;
+        dp[1] = newNum[1] * 1;
+        dp[2] = Math.max(dp[1], newNum[2] * 2);
+        for (int i = 3; i < maxNum+1; i++) {
+            dp[i] = Math.max(dp[i-1], dp[i-2] + newNum[i] * i);
+        }
+        return dp[maxNum];
+    }
 }
