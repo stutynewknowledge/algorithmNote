@@ -1,0 +1,30 @@
+package DynamicProgramming.maxProfit.maxProfit1;
+
+/**
+ * 买卖股票最佳时机I
+ */
+class Solution {
+    public int maxProfit(int[] prices) {
+        int n = prices.length;
+        if(prices == null || n == 0){
+            return 0;
+        }
+        /**
+         int[][] dp = new int[n][2];
+         dp[0][0] = 0;
+         dp[0][1] = -prices[0];
+         for(int i = 1; i < n; i++){
+         dp[i][0] = Math.max(dp[i-1][0], dp[i-1][1] + prices[i]);
+         dp[i][1] = Math.max(dp[i-1][1], -prices[i]);
+         }
+         return dp[n-1][0];
+         */
+        // 空间优化到O(1), i只与i-1有关，可以将空间优化到O(1)
+        int profit0 = 0, profit1 = -prices[0];
+        for(int i = 1; i < n; i++){
+            profit0 = Math.max(profit0, profit1+prices[i]);
+            profit1 = Math.max(profit1,-prices[i]);
+        }
+        return profit0;
+    }
+}
